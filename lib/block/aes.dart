@@ -1133,7 +1133,7 @@ class AESEngine extends BaseBlockCipher {
         _S[(x >> 24) & 255] << 24);
   }
 
-  static const _BLOCK_SIZE = 16;
+  static const _BLOCK_SIZE = 32;
 
   @override
   String get algorithmName => 'AES';
@@ -1165,6 +1165,7 @@ class AESEngine extends BaseBlockCipher {
     }
 
     var KC = shiftr32(keyLen, 2);
+    print("KC $KC");
     _ROUNDS = KC +
         6; // This is not always true for the generalized Rijndael that allows larger block sizes
 
@@ -1344,9 +1345,11 @@ class AESEngine extends BaseBlockCipher {
 
   void _encryptBlock(input, inOff, Uint8List out, int outOff, KW) {
     var C0 = unpack32(input, inOff + 0, Endian.little);
-    var C1 = unpack32(input, inOff + 4, Endian.little);
-    var C2 = unpack32(input, inOff + 8, Endian.little);
-    var C3 = unpack32(input, inOff + 12, Endian.little);
+    var C1 = unpack32(input, inOff + 8, Endian.little);
+    var C2 = unpack32(input, inOff + 16, Endian.little);
+    var C3 = unpack32(input, inOff + 24, Endian.little);
+
+    print("kw ${KW.length}:${KW[0].length}");
 
     var t0 = C0 ^ KW[0][0];
     var t1 = C1 ^ KW[0][1];
@@ -1442,16 +1445,16 @@ class AESEngine extends BaseBlockCipher {
         KW[r][3];
 
     pack32(C0, out, outOff + 0, Endian.little);
-    pack32(C1, out, outOff + 4, Endian.little);
-    pack32(C2, out, outOff + 8, Endian.little);
-    pack32(C3, out, outOff + 12, Endian.little);
+    pack32(C1, out, outOff + 8, Endian.little);
+    pack32(C2, out, outOff + 16, Endian.little);
+    pack32(C3, out, outOff + 24, Endian.little);
   }
 
   void _decryptBlock(input, inOff, Uint8List out, int outOff, KW) {
     var C0 = unpack32(input, inOff + 0, Endian.little);
-    var C1 = unpack32(input, inOff + 4, Endian.little);
-    var C2 = unpack32(input, inOff + 8, Endian.little);
-    var C3 = unpack32(input, inOff + 12, Endian.little);
+    var C1 = unpack32(input, inOff + 8, Endian.little);
+    var C2 = unpack32(input, inOff + 16, Endian.little);
+    var C3 = unpack32(input, inOff + 24, Endian.little);
 
     var t0 = C0 ^ KW[_ROUNDS][0];
     var t1 = C1 ^ KW[_ROUNDS][1];
@@ -1546,8 +1549,8 @@ class AESEngine extends BaseBlockCipher {
         KW[0][3];
 
     pack32(C0, out, outOff + 0, Endian.little);
-    pack32(C1, out, outOff + 4, Endian.little);
-    pack32(C2, out, outOff + 8, Endian.little);
-    pack32(C3, out, outOff + 12, Endian.little);
+    pack32(C1, out, outOff + 8, Endian.little);
+    pack32(C2, out, outOff + 16, Endian.little);
+    pack32(C3, out, outOff + 24, Endian.little);
   }
 }
